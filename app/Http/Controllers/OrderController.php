@@ -9,6 +9,22 @@ use Midtrans\Snap;
 
 class OrderController extends Controller
 {
+    public function index(Request $request)
+    {
+        $userId = $request->input('user_id');
+        $orders = Order::query();
+
+        $orders->when($userId, function($query) use ($userId) {
+            return $query->where('user_id', '=', $userId);
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'code' => 200,
+            'data' => $orders->get()
+        ]);
+    }
+
     private function getMidtransSnapUrl($params)
     {
         Config::$serverKey = env('MIDTRANS_SERVER_KEY');
@@ -26,6 +42,7 @@ class OrderController extends Controller
         $order = Order::create([
             'user_id' => $user['id'],
             'course_id' => $course['id'],
+            'price' => $course['price']
         ]);
 
         $midtransParams = [
@@ -63,6 +80,7 @@ class OrderController extends Controller
 
         return response()->json([
             'status' => 'success',
+            'code' => 200,
             'data' => $order
         ]);
     }
