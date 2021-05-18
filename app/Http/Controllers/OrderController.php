@@ -52,8 +52,18 @@ class OrderController extends Controller
         $midtransSnapUrl = $this->getMidtransSnapUrl($midtransParams);
 
         $order->snap_url = $midtransSnapUrl;
+        $order->metadata = [
+            'course_id' => $course['id'],
+            'course_price' => $course['price'],
+            'course_title' => $course['title'],
+            'course_thumbnail' => $course['thumbnail'],
+            'course_level' => $course['level'],
+        ];
         $order->save();
 
-        return response()->json($order);
+        return response()->json([
+            'status' => 'success',
+            'data' => $order
+        ]);
     }
 }
