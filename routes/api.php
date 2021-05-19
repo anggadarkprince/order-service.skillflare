@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\WebhookController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,11 +15,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::get('/', function () {
+    return response()->redirectToRoute('version');
 });
+Route::get('version', function () {
+    return response()->json([
+        'app' => env('APP_NAME', 'Order Service'),
+        'code' => 'order-service.skillflare',
+        'version' => 'v1.0'
+    ]);
+})->name('version');
 
-Route::post('orders', [OrderController::class, 'create']);
-Route::get('orders', [OrderController::class, 'index']);
+Route::post('orders', [OrderController::class, 'create'])->name('orders.create');
+Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
 
-Route::post('webhook', [WebhookController::class, 'midtransHandler']);
+Route::post('webhook', [WebhookController::class, 'midtransHandler'])->name('payments.webhook');
