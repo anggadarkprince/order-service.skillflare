@@ -79,9 +79,13 @@ class WebhookController extends Controller
         if ($order->status === 'success') {
             $url = env('SERVICE_COURSE_URL') . 'api/user-courses/premium';
             try {
-                $response = Http::post($url, $data);
+                $response = Http::post($url, [
+                    'user_id' => $order->user_id,
+                    'course_id' => $order->course_id
+                ]);
                 $data = $response->json();
-                $data['http_code'] = $response->status();
+
+                return response()->json($data);
             } catch (Throwable $th) {
                 return response()->json([
                     'status' => 'error',
