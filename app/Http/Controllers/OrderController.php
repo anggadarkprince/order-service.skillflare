@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateOrderRequest;
+use App\Http\Resources\OrderCollection;
+use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\DB;
 use Midtrans\Config;
 use Midtrans\Snap;
@@ -16,7 +19,7 @@ class OrderController extends Controller
      * Show order data.
      *
      * @param Request $request
-     * @return JsonResponse
+     * @return OrderCollection
      */
     public function index(Request $request)
     {
@@ -27,11 +30,7 @@ class OrderController extends Controller
             return $query->where('user_id', '=', $userId);
         });
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $orders->get()
-        ]);
+        return new OrderCollection($orders->paginate());
     }
 
     /**
